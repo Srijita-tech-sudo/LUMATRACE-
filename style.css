@@ -1,0 +1,140 @@
+/* GENERAL SETTINGS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #050816;
+    color: white;
+}
+
+/* NAVIGATION */
+
+header {
+    background: rgba(10, 15, 40, 0.95);
+    padding: 20px;
+    border-bottom: 1px solid #242c50;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h2 {
+    color: #a78bfa;
+    letter-spacing: 3px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* HOMEPAGE */
+
+.hero {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+
+    background:
+    radial-gradient(circle at center,
+    #25205c 0%,
+    #10152e 45%,
+    #050816 100%);
+}
+
+.hero h1 {
+    font-size: 42px;
+    color: #c4b5fd;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    max-width: 600px;
+    line-height: 1.8;
+    color: #cbd5e1;
+}
+
+/* BUTTON */
+
+button {
+    margin-top: 30px;
+    padding: 15px 30px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #a78bfa;
+    transform: scale(1.05);
+}
+
+/* SECTIONS */
+
+section:not(.hero) {
+    padding: 80px 25px;
+    text-align: center;
+}
+
+section h2 {
+    color: #a78bfa;
+    margin-bottom: 25px;
+}
+
+section p {
+    line-height: 1.8;
+    color: #cbd5e1;
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #0b1025;
+    color: #94a3b8;
+    border-top: 1px solid #242c50;
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 600px) {
+
+    nav {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    nav ul {
+        gap: 15px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+  }
