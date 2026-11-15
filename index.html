@@ -1,73 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPHEREx & WISE Sky Blink Comparator | NASA Space Apps</title>
+    <style>
+        :root {
+            --panel-bg: rgba(17, 22, 41, 0.9);
+            --accent: #38bdf8;
+            --alert: #f43f5e;
+            --sim: #a855f7;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
 
-    <title>LUMATRACE | NASA Hackathon 2026</title>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <link rel="stylesheet" href="style.css">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* Custom background image with a dark gradient overlay for text readability */
+            background-image: linear-gradient(rgba(7, 9, 19, 0.88), rgba(7, 9, 19, 0.88)), url('20261114_144111.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 16px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 10px;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+            margin-bottom: 24px;
+        }
+
+        .logo-img {
+            height: 55px;
+            width: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        header h1 { font-size: 1.6rem; color: var(--accent); letter-spacing: 0.5px; }
+        header p { color: var(--text-muted); font-size: 0.9rem; max-width: 700px; margin: 8px auto 0; }
+
+        .dashboard {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 850px) {
+            .dashboard { grid-template-columns: 1.2fr 0.8fr; }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: rgba(11, 15, 29, 0.8);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        select, button {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover, select:hover { border-color: var(--accent); }
+        button.active { background: var(--accent); color: #000; font-weight: bold; }
+        button.blink-btn { background: var(--alert); border-color: var(--alert); font-weight: bold; }
+        button.sim-active { background: var(--sim); border-color: var(--sim); color: #fff; font-weight: bold; }
+
+        .viewport-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-height: 520px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #000;
+            cursor: crosshair;
+        }
+
+        .viewport-wrapper img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            user-select: none;
+        }
+
+        .sim-planet {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+            display: none;
+        }
+
+        #planet-epoch-a { top: 42%; left: 58%; }
+        #planet-epoch-b { top: 46%; left: 63%; }
+
+        #img-overlay-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid var(--accent);
+        }
+
+        #img-overlay-container img {
+            width: 100%;
+            max-width: none;
+        }
+
+        .slider-control {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 99px;
+            background: #1e293b;
+            color: var(--accent);
+        }
+
+        .marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #22c55e;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 8px #22c55e;
+            z-index: 10;
+        }
+
+        .all-sky-box img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .log-list {
+            list-style: none;
+            margin-top: 12px;
+            max-height: 160px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        .log-list li {
+            padding: 8px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .log-list li span { color: #22c55e; font-family: monospace; }
+    </style>
 </head>
-
 <body>
 
-    <header>
-        <nav>
-            <div class="logo-container">
-    <img src="file_0000000096c88211928ccaee7e45b09f.png" alt="LUMATRACE Logo">
-    <h2>LUMATRACE</h2>
+<header>
+    <!-- Your Custom Logo -->
+    <img src="File_0000000096c88211928ccaee7e45b09f.png" alt="Project Logo" class="logo-img">
+    <h1>SPHEREx & WISE Sky Change Detector</h1>
+    <p>Planet X & SPHEREx Challenge: Compare infrared sky bands and epochs to spot fast-moving asteroids, brown dwarfs, and transient objects[span_0](start_span)[span_0](end_span).</p>
+</header>
+
+<div class="dashboard">
+    <div class="card">
+        <h2>
+            <span>Infrared Band & Epoch Comparator</span>
+            <span class="badge" id="active-label">Comparing: Band W1 vs W2</span>
+        </h2>
+
+        <div class="controls">
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-muted); display:block;">Epoch A (Base)</label>
+                <select id="select-base" onchange="updateImages()">
+                    <option value="20261115_203357.jpg">WISE Band W1 (3.4 μm)</option>
+                    <option value="20261115_203413.jpg">WISE Band W2 (4.6 μm)</option>
+                    <option value="20261115_203432.jpg">WISE Band W3 (12 μm)</option>
+                    <option value="20261115_203504.jpg">WISE Band W4 (22 μm)</option>
+                </select>
             </div>
 
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#explore">Explore</a></li>
-            </ul>
-        </nav>
-    </header>
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-muted); display:block;">Epoch B (6 Months Later)</label>
+                <select id="select-compare" onchange="updateImages()">
+                    <option value="20261115_203413.jpg" selected>WISE Band W2 (4.6 μm)</option>
+                    <option value="20261115_203432.jpg">WISE Band W3 (12 μm)</option>
+                    <option value="20261115_203504.jpg">WISE Band W4 (22 μm)</option>
+                    <option value="20261115_203357.jpg">WISE Band W1 (3.4 μm)</option>
+                </select>
+            </div>
 
-    <section id="home" class="hero">
-
-        <h1>Explore Beyond Boundaries</h1>
-
-        <p>
-            Discover, explore and understand our universe
-            through the power of science and technology.
-        </p>
-
-        <button onclick="exploreProject()">
-            Explore LUMATRACE
-        </button>
-
-    </section>
-
-    <section id="about">
-
-        <h2>About LUMATRACE</h2>
-
-        <p>
-            LUMATRACE is our NASA Space Apps Challenge 2026
-            project. More information coming soon.
-        </p>
-
-    </section>
-
-    <section id="explore">
-
-        <h2>Explore Our Project</h2>
-
-        <div id="project-content">
-            Our scientific exploration begins here.
+            <div style="display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;">
+                <button id="btn-slider" class="active" onclick="setMode('slider')">Swipe Mode</button>
+                <button id="btn-blink" onclick="toggleBlink()">▶ Start Blink</button>
+                <button id="btn-sim" onclick="toggleSim()">🪐 Simulate Planet X</button>
+            </div>
         </div>
 
-    </section>
+        <div class="viewport-wrapper" id="viewport" onclick="flagCandidate(event)">
+            <img id="img-base" src="20261115_203357.jpg" alt="Base Sky Band">
+            <div class="sim-planet" id="planet-epoch-a"></div>
 
-    <footer>
-        <p>© 2026 LUMATRACE | NASA Space Apps Challenge</p>
-    </footer>
+            <div id="img-overlay-container">
+                <img id="img-compare" src="20261115_203413.jpg" alt="Compare Sky Band">
+                <div class="sim-planet" id="planet-epoch-b"></div>
+            </div>
+        </div>
 
-    <script src="script.js"></script>
+        <input type="range" min="0" max="100" value="50" class="slider-control" id="swipe-slider" oninput="slideImage(this.value)">
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:8px;">
+            💡 <strong>Demo Tip:</strong> Click <em>Simulate Planet X</em>, then hit <em>Start Blink</em> to demonstrate finding moving bodies[span_1](start_span)[span_1](end_span)! Click anywhere to log coordinates.
+        </p>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:24px;">
+        <div class="card all-sky-box">
+            <h2>
+                <span>All-Sky Survey Regions</span>
+                <span class="badge">Target Map</span>
+            </h2>
+            <img src="20261115_203340.jpg" alt="All-Sky Survey Map">
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-top:10px;">
+                Highlighted bounding boxes indicate high-priority galactic sectors scanned for proper-motion anomalies[span_2](start_span)[span_2](end_span).
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span>Flagged Moving Candidates</span>
+                <button onclick="clearMarkers()" style="font-size:0.75rem; padding:4px 8px;">Clear All</button>
+            </h2>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Click on the comparator sky field to log coordinates of shifted objects.</p>
+            <ul class="log-list" id="candidate-log">
+                <li>No candidates flagged yet. Click the starfield!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    let blinkInterval = null;
+    let showingBase = true;
+    let simActive = false;
+    let candidateCount = 0;
+
+    const imgBase = document.getElementById('img-base');
+    const imgCompare = document.getElementById('img-compare');
+    const overlayContainer = document.getElementById('img-overlay-container');
+    const slider = document.getElementById('swipe-slider');
+    const label = document.getElementById('active-label');
+    const viewport = document.getElementById('viewport');
+
+    function fixOverlayWidth() {
+        imgCompare.style.width = viewport.offsetWidth + 'px';
+    }
+    window.addEventListener('resize', fixOverlayWidth);
+    window.addEventListener('load', fixOverlayWidth);
+
+    function updateImages() {
+        const baseSrc = document.getElementById('select-base').value;
+        const compSrc = document.getElementById('select-compare').value;
+        imgBase.src = baseSrc;
+        imgCompare.src = compSrc;
+
+        const baseName = document.getElementById('select-base').selectedOptions[0].text.split(' ')[2];
+        const compName = document.getElementById('select-compare').selectedOptions[0].text.split(' ')[2];
+        label.textContent = `Comparing: ${baseName} vs ${compName}`;
+    }
+
+    function slideImage(val) {
+        stopBlink();
+        overlayContainer.style.width = val + '%';
+    }
+
+    function setMode(mode) {
+        if (mode === 'slider') {
+            stopBlink();
+            overlayContainer.style.width = slider.value + '%';
+            document.getElementById('btn-slider').classList.add('active');
+        }
+    }
+
+    function toggleBlink() {
+        const btn = document.getElementById('btn-blink');
+        if (blinkInterval) {
+            stopBlink();
+        } else {
+            document.getElementById('btn-slider').classList.remove('active');
+            btn.classList.add('blink-btn');
+            btn.textContent = '⏹ Stop Blink';
+            blinkInterval = setInterval(() => {
+                showingBase = !showingBase;
+                overlayContainer.style.width = showingBase ? '0%' : '100%';
+            }, 400);
+        }
+    }
+
+    function stopBlink() {
+        if (blinkInterval) {
+            clearInterval(blinkInterval);
+            blinkInterval = null;
+            const btn = document.getElementById('btn-blink');
+            btn.classList.remove('blink-btn');
+            btn.textContent = '▶ Start Blink';
+        }
+    }
+
+    function toggleSim() {
+        simActive = !simActive;
+        const btn = document.getElementById('btn-sim');
+        const pA = document.getElementById('planet-epoch-a');
+        const pB = document.getElementById('planet-epoch-b');
+
+        if (simActive) {
+            btn.classList.add('sim-active');
+            btn.textContent = '🪐 Hide Simulation';
+            pA.style.display = 'block';
+            pB.style.display = 'block';
+        } else {
+            btn.classList.remove('sim-active');
+            btn.textContent = '🪐 Simulate Planet X';
+            pA.style.display = 'none';
+            pB.style.display = 'none';
+        }
+    }
+
+    function flagCandidate(e) {
+        const rect = viewport.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+        const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+
+        let note = prompt(`Label anomaly at [X: ${x}%, Y: ${y}%]:`, "Moving Object Candidate");
+        if (!note) return;
+
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = x + '%';
+        marker.style.top = y + '%';
+        viewport.appendChild(marker);
+
+        const log = document.getElementById('candidate-log');
+        if (candidateCount === 0) log.innerHTML = '';
+        candidateCount++;
+
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${note}</strong> <span>[X: ${x}%, Y: ${y}%]</span>`;
+        log.prepend(li);
+    }
+
+    function clearMarkers() {
+        document.querySelectorAll('.marker').forEach(m => m.remove());
+        candidateCount = 0;
+        document.getElementById('candidate-log').innerHTML = '<li>No candidates flagged yet. Click the starfield!</li>';
+    }
+</script>
 
 </body>
-</html>
+    </html>
+    
