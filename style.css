@@ -1,4 +1,6 @@
-/* GENERAL SETTINGS */
+/* =================================
+   LUMATRACE - MAIN DESIGN
+================================= */
 
 * {
     margin: 0;
@@ -7,134 +9,305 @@
     scroll-behavior: smooth;
 }
 
+
+/* =================================
+   WEBSITE BACKGROUND
+================================= */
+
 body {
     font-family: Arial, sans-serif;
-    background: #050816;
+
+    background-image:
+        linear-gradient(
+            rgba(5, 8, 25, 0.72),
+            rgba(5, 8, 25, 0.85)
+        ),
+        url("20261114_144111.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    background-color: #050819;
     color: white;
 }
 
-/* NAVIGATION */
+
+/* =================================
+   NAVIGATION BAR
+================================= */
 
 header {
-    background: rgba(10, 15, 40, 0.95);
-    padding: 20px;
-    border-bottom: 1px solid #242c50;
+    background: rgba(5, 8, 25, 0.85);
+    padding: 15px 5%;
+
+    border-bottom: 1px solid
+    rgba(180, 160, 255, 0.2);
 }
 
-nav {
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-nav h2 {
-    color: #a78bfa;
+
+/* LOGO */
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-container img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.logo-container h2 {
+    color: #d5c7ff;
     letter-spacing: 3px;
 }
 
-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-}
 
-nav a {
+/* NAVIGATION LINKS */
+
+.nav-links a {
     color: white;
     text-decoration: none;
+    margin: 8px;
     font-size: 14px;
+    transition: 0.3s;
 }
 
-/* HOMEPAGE */
+.nav-links a:hover {
+    color: #bda6ff;
+}
+
+
+/* =================================
+   HERO SECTION
+================================= */
 
 .hero {
     min-height: 85vh;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 30px;
 
-    background:
-    radial-gradient(circle at center,
-    #25205c 0%,
-    #10152e 45%,
-    #050816 100%);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.subtitle {
+    color: #c4a8ff;
+    letter-spacing: 4px;
+    font-size: 13px;
+    margin-bottom: 20px;
 }
 
 .hero h1 {
-    font-size: 42px;
-    color: #c4b5fd;
+    font-size: 55px;
+    color: white;
     margin-bottom: 20px;
+
+    text-shadow: 0 0 20px #8b70ff;
 }
 
 .hero p {
     max-width: 600px;
     line-height: 1.8;
-    color: #cbd5e1;
+    color: #d4d4e8;
 }
 
-/* BUTTON */
 
-button {
+/* EXPLORE BUTTON */
+
+.main-button {
     margin-top: 30px;
-    padding: 15px 30px;
-    background: #7c3aed;
+    padding: 14px 28px;
+
+    background: #9274ff;
     color: white;
-    border: none;
+
+    text-decoration: none;
     border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
+
     transition: 0.3s;
 }
 
-button:hover {
-    background: #a78bfa;
+.main-button:hover {
+    background: #6848d9;
     transform: scale(1.05);
 }
 
-/* SECTIONS */
 
-section:not(.hero) {
-    padding: 80px 25px;
+/* =================================
+   GENERAL SECTIONS
+================================= */
+
+.section {
+    padding: 80px 10%;
+
     text-align: center;
+
+    background: rgba(5, 8, 25, 0.65);
+
+    margin: 25px 0;
 }
 
-section h2 {
-    color: #a78bfa;
+.section h2 {
+    color: #c7b5ff;
+    font-size: 32px;
     margin-bottom: 25px;
 }
 
-section p {
+.section p {
+    color: #d5d5e8;
     line-height: 1.8;
-    color: #cbd5e1;
 }
 
-/* FOOTER */
+
+/* =================================
+   RESEARCH CARDS
+================================= */
+
+.research-grid {
+    display: grid;
+
+    grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.research-card {
+    background: rgba(125, 100, 220, 0.15);
+
+    border: 1px solid
+    rgba(190, 170, 255, 0.3);
+
+    border-radius: 15px;
+    padding: 30px 20px;
+
+    transition: 0.3s;
+}
+
+.research-card:hover {
+    transform: translateY(-8px);
+
+    background: rgba(125, 100, 220, 0.25);
+}
+
+.research-card h3 {
+    color: #d6c8ff;
+    margin-bottom: 15px;
+}
+
+
+/* =================================
+   SEARCH BAR
+================================= */
+
+#searchInput {
+    width: 90%;
+    max-width: 500px;
+
+    padding: 15px;
+    margin: 25px 0;
+
+    border-radius: 25px;
+    border: 1px solid #a58bff;
+
+    background: #11152d;
+    color: white;
+
+    outline: none;
+}
+
+
+/* =================================
+   RESEARCH DATABASE RESULTS
+================================= */
+
+.result-card {
+    max-width: 650px;
+
+    margin: 15px auto;
+    padding: 20px;
+
+    text-align: left;
+
+    background: rgba(125, 100, 220, 0.15);
+
+    border: 1px solid
+    rgba(190, 170, 255, 0.3);
+
+    border-radius: 12px;
+}
+
+.result-card h3 {
+    color: #d6c8ff;
+    margin-bottom: 10px;
+}
+
+.result-card p {
+    margin-bottom: 10px;
+}
+
+.result-card a {
+    color: #bda6ff;
+}
+
+
+/* =================================
+   FOOTER
+================================= */
 
 footer {
     text-align: center;
+
     padding: 25px;
-    background: #0b1025;
-    color: #94a3b8;
-    border-top: 1px solid #242c50;
+
+    background: rgba(5, 8, 25, 0.9);
+
+    color: #aaa9c5;
 }
 
-/* MOBILE RESPONSIVENESS */
+
+/* =================================
+   MOBILE RESPONSIVENESS
+================================= */
 
 @media (max-width: 600px) {
 
-    nav {
+    .navbar {
         flex-direction: column;
-        gap: 20px;
-    }
-
-    nav ul {
-        gap: 15px;
     }
 
     .hero h1 {
-        font-size: 30px;
+        font-size: 38px;
     }
 
-  }
+    .nav-links {
+        text-align: center;
+    }
+
+    .nav-links a {
+        display: inline-block;
+        margin: 8px 5px;
+    }
+
+    .section {
+        padding: 55px 7%;
+    }
+
+}
